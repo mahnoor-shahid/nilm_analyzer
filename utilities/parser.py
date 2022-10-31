@@ -15,22 +15,24 @@ def refit_parser(readme_file):
         print(f'Parsing the readme file specified: {readme_file}')
         with open(readme_file) as f:
             content = f.readlines()
+            content.append('\n')
+    
         ls = {}
         for i, s in enumerate(content):
-            if 'House' in s.capitalize():
+
+            if '0.Aggregate,' in s:
+                
                 keys, appliances = [], []
-                house = s.split()[1]
-                for indx in range(1, 6):
-                    if content[i+indx] == '\t!NOTES\n':
-                        break
-                    else:
-                        target = [value.split('.') for value in [value for value in content[i+indx].split(',') if value != '\n']]
-                        for t in target:
-                            if len(t) > 2: ##### one comma missing in house 5 caused issue
-                                appliances.append(t[1])
-                                appliances.append(t[2])
-                            else:
-                                appliances.append(t[1])
+                house = content[i-1].split()[1]
+
+                for indx in range(0, 3):
+                    target = [value.split('.') for value in [value for value in content[i+indx].split(',') if value != '\n']]
+                    for t in target:
+                        if len(t) > 2: ##### one comma missing in house 5 caused issue
+                            appliances.append(t[1])
+                            appliances.append(t[2])
+                        else:
+                            appliances.append(t[1])
                 ls.update({house: [item.split('\n')[0].replace(" ", "") for item in appliances]})
         return ls
     
