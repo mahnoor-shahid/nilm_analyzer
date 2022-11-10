@@ -42,7 +42,7 @@ class CSV_Loader(_Loader):
             pass
         
     @staticmethod
-    def __load_file(csv_file_path,
+    def _load_file(csv_file_path,
                    index_column_name=None,
                    _nrows=None,
                    _iterator=True,
@@ -57,7 +57,7 @@ class CSV_Loader(_Loader):
             print("Error occured in _load_file method of CSV_Loader class due to ", e)
     
     @staticmethod
-    def __load_files_via_dask(_data_folder,
+    def _load_files_via_dask(_data_folder,
                              _files_format,
                              _buildings):
         try:
@@ -85,10 +85,10 @@ class REFIT_Loader(CSV_Loader):
                 
         finally:
             self.__config = get_config_from_json(description="refit_loader configuration", config_file="refit_loader/config.json")
-            self.collective_dataset = CSV_Loader.__load_files_via_dask(_data_folder=self.__config['DATA_FOLDER']+'House_',
+            self.collective_dataset = CSV_Loader._load_files_via_dask(_data_folder=self.__config['DATA_FOLDER']+'House_',
                                                                 _files_format=self.__config['DATA_TYPE'],
                                                                 _buildings=self.__config['REFIT_HOUSES'])
-            self.__keys_of_appliances = refit_parser(config['README_FILE'])
+            self.__keys_of_appliances = refit_parser(self.__config['README_FILE'])
             for house_number in self.collective_dataset:
                 cols = [header.lower() for header in self.__keys_of_appliances[str(house_number)]]
                 self.collective_dataset[house_number] = self.collective_dataset[house_number].rename(columns={"Time": "time", "Unix": "unix", "Aggregate": cols[0], "Appliance1":cols[1], "Appliance2":cols[2],
@@ -188,14 +188,15 @@ class REFIT_Loader(CSV_Loader):
                 for house_number in houses:
                     if check_house_availability(arg_name='House Number', arg_value=house_number, collection=self.collective_dataset.keys()):
                         if target_appliance in self.collective_dataset[house_number].columns:
-                            print(f"Fetching {target_appliance.upper()} data for House {house_number}")
-                            data = self.collective_dataset[house_number][['aggregate', target_appliance]].compute()
-                            data.index = convert_object2timestamps(data.index)
-                            self.data.update({house_number: data})
+                            if house_number not in self.data.keys():
+                                print(f"Fetching {target_appliance.upper()} data for House {house_number}")
+                                data = self.collective_dataset[house_number][['aggregate', target_appliance]].compute()
+                                data.index = convert_object2timestamps(data.index)
+                                self.data.update({house_number: data})
                         else:
-                            print(f"Appliance '{target_appliance.upper()}' does not exist in house {house_number}. Hint: Check the availability of the appliance by using 'get_appliance_names' method")
+                            print(f"Appliance '{target_appliance.upper()}' does not exist in house {house_number}.")
 
-            return RefitData(self.data, self.collective_dataset.keys())
+            return RefitData(self.data)
                 
         except Exception as e:
             print("Error occured in get_appliance_data method of REFIT_Loader due to ", e)
@@ -205,10 +206,9 @@ class RefitData():
     """
     Class that loads the provided data after computing DASK dataframes and provides different methods for transformations
     """
-    def __init__(self, data, available_houses):
+    def __init__(self, data):
         try:
             self.data = data
-            self.available_houses = available_houses
         
         except Exception as e:
             print("Error occured in initialization of RefitData class due to ", e)
