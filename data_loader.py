@@ -42,7 +42,7 @@ class CSV_Loader(_Loader):
             pass
         
     @staticmethod
-    def _load_file(csv_file_path,
+    def __load_file(csv_file_path,
                    index_column_name=None,
                    _nrows=None,
                    _iterator=True,
@@ -57,7 +57,7 @@ class CSV_Loader(_Loader):
             print("Error occured in _load_file method of CSV_Loader class due to ", e)
     
     @staticmethod
-    def _load_files_via_dask(_data_folder,
+    def __load_files_via_dask(_data_folder,
                              _files_format,
                              _buildings):
         try:
@@ -84,13 +84,13 @@ class REFIT_Loader(CSV_Loader):
             print("Error occured in initialization of REFIT_Loader class due to ", e)
                 
         finally:
-            config = get_config_from_json(description="general configuration", config_file="refit_loader/config.json")
-            self.collective_dataset = CSV_Loader._load_files_via_dask(_data_folder=config['DATA_FOLDER']+'House_',
-                                                                _files_format=config['DATA_TYPE'],
-                                                                _buildings=config['REFIT_HOUSES'])
-            self.keys_of_appliances = refit_parser(config['README_FILE'])
+            self.__config = get_config_from_json(description="refit_loader configuration", config_file="refit_loader/config.json")
+            self.collective_dataset = CSV_Loader.__load_files_via_dask(_data_folder=self.__config['DATA_FOLDER']+'House_',
+                                                                _files_format=self.__config['DATA_TYPE'],
+                                                                _buildings=self.__config['REFIT_HOUSES'])
+            self.__keys_of_appliances = refit_parser(config['README_FILE'])
             for house_number in self.collective_dataset:
-                cols = [header.lower() for header in self.keys_of_appliances[str(house_number)]]
+                cols = [header.lower() for header in self.__keys_of_appliances[str(house_number)]]
                 self.collective_dataset[house_number] = self.collective_dataset[house_number].rename(columns={"Time": "time", "Unix": "unix", "Aggregate": cols[0], "Appliance1":cols[1], "Appliance2":cols[2],
                                                                                                       "Appliance3":cols[3], "Appliance4":cols[4], "Appliance5":cols[5],"Appliance6":cols[6], "Appliance7":cols[7],
                                                                                                       "Appliance8":cols[8], "Appliance9":cols[9]})
