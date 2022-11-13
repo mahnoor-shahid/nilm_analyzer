@@ -1,10 +1,11 @@
 
+import pandas as pd
 import dask.dataframe as dd
 from refit_loader.utilities.configuration import get_config_from_json 
 from refit_loader.utilities.parser import refit_parser
 from refit_loader.utilities.time_utils import convert_object2timestamps
 from refit_loader.utilities.validations import check_house_availability, check_list_validations, check_correct_datatype
-        
+from refit_loader.utilities.active_durations import get_activities        
     
 class _Loader:
     """
@@ -150,7 +151,7 @@ class REFIT_Loader(CSV_Loader):
         except Exception as e:
             print("Error occured in get_house_data method of REFIT_Loader due to ", e)
     
-    def get_appliance_data(self, appliance, houses=None):
+    def get_appliance_data(self, appliance: str, houses=None):
         """
         This method will return RefitData object that can let user access data in dictionary format as well can access some transformation methods
 
@@ -267,5 +268,42 @@ class RefitData():
 
         except Exception as e:
             print("Error occured in resample method of REFIT_Loader due to ", e) 
+            
+            
+    def subset_data(self, no_of_days=5 ):
+
+            """
+            This method will create different and smaller versions of the training, validation and testing subsets from the collective_data
+
+            Parameters 
+            ----------
+            no_of_days: int
+                            number of days with active appliance time/durations
+
+            returns: RefitData object (updated)
+                .active_data = to access subset_data in a dictionary format
+                        dictionary contains dataframes of multiple houses where key represents the house number (int) and value represents (pandas.core.frame.DataFrame)
+                        dataframe is of the following format            
+                        {
+                            'time': pandas.core.indexes.datetimes.DatetimeIndex
+                                timestamps as index identifying every data row
+                            'aggregate': numpy.int64
+                                aggregated power consumption of all appliances in the sepcified house
+                            *** target_appliance : numpy.int64
+                                power consumption of target appliances in the sepcified house
+                        }
+            """
+            self.active_data = {}
+
+            for key, value in self.data.items():
+                print(f"Creating {no_of_days} smaller subsets from complete dataset of House {key}")
+                activities = get_activities(value)
+                date_wise_activities = activities.groupby([activities['Activity_Start'].dt.date]).mean()
+                time_indices = date_wise_activities.sort_values('Duration').tail(no_of_days).index
+                df_outer = pd.DataFrame()
+                for version, time_indx in enumerate(time_indices):
+                    df_outer = pd.concat([df_outer, value.loc[str(time_indx)]])  
+                "Updating collective_data with selected activities..."
+                self.active_data.update({key: df_outer})
 
     
