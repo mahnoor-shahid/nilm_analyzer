@@ -1,13 +1,13 @@
 
 import pandas as pd
 import dask.dataframe as dd
-from refit_loader.utilities.configuration import get_config_from_json 
+from refit_loader.utilities.configuration import get_config_from_json
 from refit_loader.utilities.parser import refit_parser
 from refit_loader.utilities.time_utils import convert_object2timestamps
 from refit_loader.utilities.validations import check_house_availability, check_list_validations, check_correct_datatype
 from refit_loader.utilities.active_durations import get_activities        
     
-class _Loader:
+class __Loader:
     """
     Interface that loads all the data into the memory
     """
@@ -28,7 +28,7 @@ class _Loader:
 
 
         
-class CSV_Loader(_Loader):
+class CSV_Loader(__Loader):
     """
     Class that loads all the data into the memory using different methods
     """
@@ -146,6 +146,7 @@ class REFIT_Loader(CSV_Loader):
                     print(f"Loading data for house = {house}")
                     data = self.collective_dataset[house].compute() 
                     data.index = convert_object2timestamps(data.index)
+                    data = data.loc[:, data.columns != "unix"].astype(float)
                     return data
         
         except Exception as e:
@@ -193,6 +194,7 @@ class REFIT_Loader(CSV_Loader):
                                 print(f"Fetching {target_appliance.upper()} data for House {house_number}")
                                 data = self.collective_dataset[house_number][['aggregate', target_appliance]].compute()
                                 data.index = convert_object2timestamps(data.index)
+                                data = data.astype(float)
                                 self.data.update({house_number: data})
                         else:
                             print(f"Appliance '{target_appliance.upper()}' does not exist in house {house_number}.")

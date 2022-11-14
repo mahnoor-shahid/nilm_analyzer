@@ -5,7 +5,7 @@ import pandas as pd
 from refit_loader.utilities.time_utils import convert_object2timestamps
 
 
-def generate_activity_report(df, target_appliance, threshold, index_name='time'):
+def __generate_activity_report(df, target_appliance, threshold, index_name='time'):
     """
     This method will return the durations or events when the appliance was active (on) 
     
@@ -125,7 +125,7 @@ def get_activities(data, target_appliance=None, threshold=None):
                         raise Exception(f"Please specify target appliance {df.columns}")
                     
                 print(f"Estimating active durations of House {key}: {target_appliance}")
-                house_activities.update({key: generate_activity_report(df, target_appliance, threshold)})
+                house_activities.update({key: __generate_activity_report(df, target_appliance, threshold)})
 
             return house_activities
         
@@ -137,7 +137,7 @@ def get_activities(data, target_appliance=None, threshold=None):
                 else:
                     raise Exception(f"Please specify target_appliance \n {data.columns}")
             print(f"Estimating active durations of: {target_appliance}")
-            return generate_activity_report(data, target_appliance, threshold)
+            return __generate_activity_report(data, target_appliance, threshold)
 
         else:
             print(f"Provided data should be of type <dict> or <pandas.core.frame.DataFrame> and not {type(data)}.")
