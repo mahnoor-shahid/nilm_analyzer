@@ -6,109 +6,15 @@
 An electrical load measurements dataset of United Kingdom households from a two-year longitudinal study. Sci Data 4, 160122 (2017). <br />
 Murray, D., Stankovic, L. & Stankovic, V.  <br />
 
-
 ### Links
 For more detail information, visit the following links: <br />
 http://dx.doi.org/10.1038/sdata.2016.122 <br />
 https://rdcu.be/cMD9F <br />
 
 
-## Steps to implement this project
-1) Clone this repository to the target source project.
-```
-git clone https://github.com/mahnoor-shahid/refit_loader.git
-```
-*You can skip Step 2 and 3 if all the [dependencies](#dependencies) are already in installed in the current environment*
-
-2) Create a conda environment using the environment.yml file <br/>
-```
-cd refit_loader/
-conda create env --file=environment.yml
-```
-
-3) Activate the created environment
-```
-conda activate refit_loader_env
-```
-
-4) Download the REFIT dataset in the **data/** folder (*it might take some time dataset takes the storage of around 6GB*)
-```
-cd data/
-Invoke-WebRequest https://pureportal.strath.ac.uk/files/52873459/Processed_Data_CSV.7z -O Processed_Data_CSV.7z
-```
-5) Unzip the downloaded REFIT dataset 
-```
-unzip Processed_Data_CSV.7z -d refit/
-```
-6) Make sure to download the "REFIT_Readme.txt" and save it in the **data/refit/** folder
-```
-cd refit_loader/data/refit
-Invoke-WebRequest https://pureportal.strath.ac.uk/files/52873458/REFIT_Readme.txt -O REFIT_Readme.txt
-```
-7) Use the notebooks "geting_started.ipynb" and "resampling.ipynb" to know the instructions on how to use the loader
-
-
-### Repo Structure:
-This repository follows the below structure format:
-```
-|
-|── loader
-|  └── __init__.py
-|  └── data_loader.py
-|
-|
-├── utils
-|  └── configuration.py
-|  └── parser.py
-|  └── time_utils.py
-|  └── validations.py
-|
-|
-├── data
-|  └── refit
-|  |  └── REFIT_Readme.txt
-|  |  └── House_1.csv
-|  |  └── House_2.csv
-|  |  └── House_3.csv
-|  |  └── House_4.csv
-|  |  └── House_5.csv
-|  |  └── House_6.csv
-|  |  └── House_7.csv
-|  |  └── House_8.csv
-|  |  └── House_9.csv
-|  |  └── House_10.csv
-|  |  └── House_11.csv
-|  |  └── House_12.csv
-|  |  └── House_13.csv
-|  |  └── House_15.csv
-|  |  └── House_16.csv
-|  |  └── House_17.csv
-|  |  └── House_18.csv
-|  |  └── House_19.csv
-|  |  └── House_20.csv
-|
-|
-├── config.json
-|
-├── 01_getting_started.ipynb
-|
-├── 02_resampling.ipynb
-|
-├── environment.yml
-|
-├── readme.md
-```
-
-
-
-## Downloads
-The REFIT Smart Home dataset is a publicly available dataset of Smart Home data. <br />
-Dataset - https://pureportal.strath.ac.uk/files/52873459/Processed_Data_CSV.7z <br />
-Readme File - https://pureportal.strath.ac.uk/files/52873458/REFIT_Readme.txt <br />
-Main Page - https://pureportal.strath.ac.uk/en/datasets/refit-electrical-load-measurements-cleaned
-
 
 ## Dependencies
+Ensure that the following dependencies are satisfied either in your current environment 
 ```
   - python=3.9.2
   - numpy=1.20.3
@@ -116,6 +22,63 @@ Main Page - https://pureportal.strath.ac.uk/en/datasets/refit-electrical-load-me
   - dask=2021.06.2
   - json=2.0.9
 ```
+or create a new environment using 'environment.yml'
+```
+conda create env --file=environment.yml
+conda activate refit_loader_env
+```
+
+
+## Steps to implement this project
+1) Use this repository as a submodule and clone it into your target source project
+```
+git submodule add https://github.com/mahnoor-shahid/refit_loader.git
+```
+
+2) Make sure the 'config.json' file has the correct DATA_FOLDER path; [Download](## From where to download the dataset ) the dataset and it should be located in this data folder.
+```
+{ 
+    "DATA_FOLDER" : "data/refit/",
+    "DATA_TYPE" : ".csv",
+    "README_FILE" : "refit_loader/REFIT_Readme.txt",
+    "REFIT_HOUSES" : [1,2,3,4,5,6,7,8,9,10,11,12,13,15,16,17,18,19,20,21]
+}
+```
+
+3) Take the reference from Refit_Analyzer to see how Refit_Loader can be accessed as a submodule and how it's utilities can be used.
+
+Reference Repository: <br />
+[Refit Analyzer](https://github.com/mahnoor-shahid/refit_analyzer) = REFIT analyzer is more like a user guide that uses REFIT Loader as a submodule and demonstrates how it can be used and how it can be useful with its utilities.
+
+
+## Repo Structure:
+This repository follows the below structure format:
+```
+|
+|── data_loader.py
+|
+├── utilities
+|  └── active_durations.py
+|  └── configuration.py
+|  └── parser.py
+|  └── time_utils.py
+|  └── validations.py
+|
+├── config.json
+|
+├── environment.yml
+|
+├── REFIT_README.txt
+|
+├── readme.md
+|
+```
+
+## From where to download the dataset 
+The REFIT Smart Home dataset is a publicly available dataset of Smart Home data. <br />
+Dataset - https://pureportal.strath.ac.uk/files/52873459/Processed_Data_CSV.7z <br />
+Main Page - https://pureportal.strath.ac.uk/en/datasets/refit-electrical-load-measurements-cleaned
+
 
 ## Citation
 ```
