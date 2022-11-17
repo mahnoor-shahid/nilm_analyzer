@@ -5,7 +5,8 @@ from refit_loader.utilities.configuration import get_config_from_json
 from refit_loader.utilities.parser import refit_parser
 from refit_loader.utilities.time_utils import convert_object2timestamps
 from refit_loader.utilities.validations import check_house_availability, check_list_validations, check_correct_datatype
-from refit_loader.utilities.active_durations import get_activities        
+from refit_loader.utilities.active_durations import get_activities 
+from refit_loader.utilities.normalisation import normalize
     
 class __Loader:
     """
@@ -86,17 +87,17 @@ class REFIT_Loader(CSV_Loader):
                 
         finally:
             self.__config = get_config_from_json(description="refit_loader configuration", config_file="refit_loader/config.json")
-            self.collective_dataset = CSV_Loader._load_files_via_dask(_data_folder=self.__config['DATA_FOLDER']+'House_',
+            self.__collective_dataset = CSV_Loader._load_files_via_dask(_data_folder=self.__config['DATA_FOLDER']+'House_',
                                                                 _files_format=self.__config['DATA_TYPE'],
                                                                 _buildings=self.__config['REFIT_HOUSES'])
             self.__keys_of_appliances = refit_parser(self.__config['README_FILE'])
-            for house_number in self.collective_dataset:
+            for house_number in self.__collective_dataset:
                 cols = [header.lower() for header in self.__keys_of_appliances[str(house_number)]]
-                self.collective_dataset[house_number] = self.collective_dataset[house_number].rename(columns={"Time": "time", "Unix": "unix", "Aggregate": cols[0], "Appliance1":cols[1], "Appliance2":cols[2],
+                self.__collective_dataset[house_number] = self.__collective_dataset[house_number].rename(columns={"Time": "time", "Unix": "unix", "Aggregate": cols[0], "Appliance1":cols[1], "Appliance2":cols[2],
                                                                                                       "Appliance3":cols[3], "Appliance4":cols[4], "Appliance5":cols[5],"Appliance6":cols[6], "Appliance7":cols[7],
                                                                                                       "Appliance8":cols[8], "Appliance9":cols[9]})
-                self.collective_dataset[house_number].index = self.collective_dataset[house_number]['time']
-                self.collective_dataset[house_number] = self.collective_dataset[house_number].drop('time', axis=1)
+                self.__collective_dataset[house_number].index = self.__collective_dataset[house_number]['time']
+                self.__collective_dataset[house_number] = self.__collective_dataset[house_number].drop('time', axis=1)
                 
     def get_appliance_names(self, house: int):
         """
@@ -112,9 +113,9 @@ class REFIT_Loader(CSV_Loader):
         """
         try:
             if check_correct_datatype(arg_name='house', arg_value=house, target_datatype=int):
-                if check_house_availability(arg_name='House Number', arg_value=house, collection=self.collective_dataset.keys()):
+                if check_house_availability(arg_name='House Number', arg_value=house, collection=self.__collective_dataset.keys()):
                     print(f"Fetching appliances for house = {house}")
-                    return [name for name in self.collective_dataset[house].columns]
+                    return [name for name in self.__collective_dataset[house].columns]
         except Exception as e:
             print("Error occured in get_appliance_names method of REFIT_Loader due to ", e)
                 
@@ -142,9 +143,9 @@ class REFIT_Loader(CSV_Loader):
         """
         try:                
             if check_correct_datatype(arg_name='house', arg_value=house, target_datatype=int):
-                if check_house_availability(arg_name='House Number', arg_value=house, collection=self.collective_dataset.keys()):
+                if check_house_availability(arg_name='House Number', arg_value=house, collection=self.__collective_dataset.keys()):
                     print(f"Loading data for house = {house}")
-                    data = self.collective_dataset[house].compute() 
+                    data = self.__collective_dataset[house].compute() 
                     data.index = convert_object2timestamps(data.index)
                     data = data.loc[:, data.columns != "unix"].astype(float)
                     return data
@@ -179,27 +180,27 @@ class REFIT_Loader(CSV_Loader):
                         }
         """
         try:
-            self.data = {}
+            self.__data = {}
             if check_correct_datatype(arg_name='appliance', arg_value=appliance, target_datatype=str):
                 target_appliance = appliance.lower()
             if houses == None:
-                houses=list(self.collective_dataset.keys())
+                houses=list(self.__collective_dataset.keys())
                 
             print(f"Loading data for appliance {target_appliance.upper()} ...")
             if check_list_validations(arg_name='houses', arg_value=houses, member_datatype='int'):
                 for house_number in houses:
-                    if check_house_availability(arg_name='House Number', arg_value=house_number, collection=self.collective_dataset.keys()):
-                        if target_appliance in self.collective_dataset[house_number].columns:
-                            if house_number not in self.data.keys():
+                    if check_house_availability(arg_name='House Number', arg_value=house_number, collection=self.__collective_dataset.keys()):
+                        if target_appliance in self.__collective_dataset[house_number].columns:
+                            if house_number not in self.__data.keys():
                                 print(f"Fetching {target_appliance.upper()} data for House {house_number}")
-                                data = self.collective_dataset[house_number][['aggregate', target_appliance]].compute()
+                                data = self.__collective_dataset[house_number][['aggregate', target_appliance]].compute()
                                 data.index = convert_object2timestamps(data.index)
                                 data = data.astype(float)
-                                self.data.update({house_number: data})
+                                self.__data.update({house_number: data})
                         else:
                             print(f"Appliance '{target_appliance.upper()}' does not exist in house {house_number}.")
 
-            return RefitData(self.data)
+            return RefitData(self.__data)
                 
         except Exception as e:
             print("Error occured in get_appliance_data method of REFIT_Loader due to ", e)
@@ -212,6 +213,7 @@ class RefitData():
     def __init__(self, data):
         try:
             self.data = data
+            self.normalize = normalize
         
         except Exception as e:
             print("Error occured in initialization of RefitData class due to ", e)
@@ -250,9 +252,9 @@ class RefitData():
                         }
         """
         try:
-            self.sampling_period = sampling_period
-            self.fill_value = fill_value
-            self.window_limit= int(window_limit*60)
+            self.__sampling_period = sampling_period
+            self.__fill_value = fill_value
+            self.__window_limit= int(window_limit*60)
             
             if house == None:
                 ls = {}
@@ -262,9 +264,10 @@ class RefitData():
                     appliance_data = self.data[house_number]
 #                     appliance_data = appliance_data.resample('1s').mean().dropna()
                     appliance_data = appliance_data.resample('1s').asfreq()
-                    appliance_data.fillna(method='ffill', axis=0, inplace=True, limit=self.window_limit)
-                    appliance_data.fillna(axis=0, inplace=True, value=self.fill_value)
-                    appliance_data = appliance_data.resample(self.sampling_period).median()
+                    appliance_data.fillna(method='ffill', axis=0, inplace=True, limit=self.__window_limit)
+                    appliance_data.fillna(axis=0, inplace=True, value=self.__fill_value)
+                    appliance_data = appliance_data.resample(self.__sampling_period).median()
+                    appliance_data.dropna(inplace = True)
                     ls.update({house_number: appliance_data})
                 self.data = ls
 
@@ -308,4 +311,3 @@ class RefitData():
                 "Updating collective_data with selected activities..."
                 self.active_data.update({key: df_outer})
 
-    
