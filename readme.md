@@ -63,6 +63,7 @@ This repository follows the below structure format:
 |  └── parser.py
 |  └── time_utils.py
 |  └── validations.py
+|  └── normalisation.py
 |
 ├── config.json
 |
