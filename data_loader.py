@@ -1,7 +1,7 @@
 
 import pandas as pd
 import os, pickle
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler
 import math
 import dask.dataframe as dd
 from refit_loader.utilities.configuration import get_config_from_json
@@ -215,6 +215,7 @@ class RefitData():
     def __init__(self, data):
         try:
             self.data = data
+            self.splits = dict()
         
         except Exception as e:
             print("Error occured in initialization of RefitData class due to ", e)
@@ -299,35 +300,78 @@ class RefitData():
             """
             self.__no_of_days = no_of_days
             for house_number, value in self.data.items():
-                print(f"Creating {self.__no_of_days} smaller subset/s from complete dataset of House {house_number}")
+                print(f"Subetting dataset with {self.__no_of_days} days of most activities for House {house_number}")
                 activities = get_activities(value)
                 date_wise_activities = activities.groupby([activities['Activity_Start'].dt.date]).mean()
                 time_indices = date_wise_activities.sort_values('Duration').tail(self.__no_of_days).index
                 df_outer = pd.DataFrame()
                 for version, time_indx in enumerate(time_indices):
                     df_outer = pd.concat([df_outer, value.loc[str(time_indx)]])
+                df_outer.sort_index(inplace=True)
                 self.data.update({house_number: df_outer})
             print("Updating data with selected active appliance activities...")
             
             
-    def get_proportioned_data(self, splits_proportion):
+    def get_proportioned_data(self, target_houses, splits_proportion):
         """
         """
         try:
+            self.__target_houses = target_houses
             self.__proportion = splits_proportion
-            
-            __all_data = pd.DataFrame()
-            for house_number in self.data.keys():
-                __all_data = pd.concat([__all_data, self.data[house_number]])
-            __train_end = __all_data.index[math.floor(self.__proportion['TRAIN_PERCENT'] * len(__all_data))]
-            __val_end = __all_data.index[math.floor((self.__proportion['TRAIN_PERCENT'] + self.__proportion['VALIDATE_PERCENT']) * len(__all_data))]
-            print("Updating data with proportioned splits...")
-            self.data = {'TRAIN_SPLIT': __all_data[:__train_end] , 'VALIDATE_SPLIT': __all_data[__train_end:__val_end], 'TEST_SPLIT': __all_data[__train_end:__val_end]}
+
+            train_split, val_split, test_split = pd.DataFrame(), pd.DataFrame(), pd.DataFrame()
+
+            if (target_houses['TRAIN'].sort() == target_houses['VALIDATE'].sort()) and (target_houses['TRAIN'].sort() == target_houses['TEST'].sort()) :
+
+                for house_number in self.__target_houses['TRAIN']:
+                    df = self.data[house_number]
+                    __train_end = df.index[math.floor(self.__proportion['TRAIN_PERCENT'] * len(df))]
+                    __val_end = df.index[math.floor((self.__proportion['TRAIN_PERCENT'] + self.__proportion['VALIDATE_PERCENT']) * len(df))]
+                    train_split = pd.concat([train_split, df[:__train_end]])
+                    val_split = pd.concat([val_split, df[__train_end:__val_end]])
+                    test_split = pd.concat([test_split, df[__val_end:]])
+
+            elif (target_houses['TRAIN'].sort() != target_houses['VALIDATE'].sort()) and (target_houses['TRAIN'].sort() != target_houses['TEST'].sort()):
+
+                for house_number in self.__target_houses['TRAIN']:
+                    df = self.data[house_number]
+                    __train_end = df.index[math.floor(self.__proportion['TRAIN_PERCENT'] * len(df))]
+                    train_split = pd.concat([train_split, df[:__train_end]])
+                for house_number in self.__target_houses['VALIDATE']:
+                    df = self.data[house_number]
+                    __val_end = df.index[math.floor(self.__proportion['VALIDATE_PERCENT'] * len(df))]
+                    val_split = pd.concat([val_split, df[:__val_end]])
+                for house_number in self.__target_houses['TEST']:
+                    df = self.data[house_number]
+                    __test_end = df.index[math.floor(self.__proportion['TEST_PERCENT'] * len(df))]
+                    test_split = pd.concat([test_split, df[:__test_end]])
+
+            elif target_houses['TRAIN'].sort() == target_houses['VALIDATE'].sort():
+
+                for house_number in self.__target_houses['TRAIN']:
+                    df = self.data[house_number]
+                    __train_end = df.index[math.floor(self.__proportion['TRAIN_PERCENT'] * len(df))]
+                    __val_end = df.index[math.floor((self.__proportion['TRAIN_PERCENT'] + self.__proportion['VALIDATE_PERCENT']) * len(df))]
+                    train_split = pd.concat([train_split, df[:__train_end]])
+                    val_split = pd.concat([val_split, df[__train_end:__val_end]])
+                for house_number in self.__target_houses['TEST']:
+                    df = self.data[house_number]
+                    __test_end = df.index[math.floor(self.__proportion['TEST_PERCENT'] * len(df))]
+                    test_split = pd.concat([test_split, df[:__test_end]])
+
+            else:
+                pass
+
+            train_split.sort_index(inplace=True)
+            val_split.sort_index(inplace=True)
+            test_split.sort_index(inplace=True)
+            self.splits.update({'TRAIN': train_split, 'VALIDATE': val_split, 'TEST': test_split})
+            print("Updating splits with specified proportion from every target house...")
 
         except Exception as e:
             print("Error occured in get_proportioned_data method due to ", e)
 
-    def normalize(self, target_houses, scaler, scalars_directory, training=False ):
+    def normalize(self, scaler, scalars_directory, training=False ):
         """
         This method will standardize the values of the provided dataset. It will compute the scalars on trainset and save them to provided path which can later be used to standarize validation set
 
@@ -350,66 +394,23 @@ class RefitData():
 
         """
         try:
-            
+            if scaler == 'Standard' or scaler == 'standard':
+                X_scaler, y_scaler = StandardScaler(), StandardScaler()
 
-            if scaler == 'Standard':
+            elif scaler == 'MinMax' or scaler == 'minmax':
+                X_scaler, y_scaler = MinMaxScaler(), MinMaxScaler()
+
+            elif scaler == 'Robust' or scaler == 'robust':
+                X_scaler, y_scaler = RobustScaler(), RobustScaler()
+
+            else:
+                print('Argument \'scaler\' value is undefined! Setting it to standard scaling....')
                 X_scaler, y_scaler = StandardScaler(), StandardScaler()
 
             if not os.path.exists(scalars_directory):
                 os.makedirs(f'{scalars_directory}/', )  # if not then create folder
 
-            if training:
-                self.__target_houses = target_houses
-                if not ((self.__target_houses['TRAIN']== self.__target_houses['VALIDATE']) and (self.__target_houses['TRAIN'] == self.__target_houses['TEST'])):
-
-                    __train_split = pd.DataFrame()
-                    for house_number in self.__target_houses['TRAIN']:
-                        __train_split = pd.concat([__train_split, self.data[house_number]])
-
-                    __val_split = pd.DataFrame()
-                    for house_number in self.__target_houses['VALIDATE']:
-                        __val_split = pd.concat([__val_split, self.data[house_number]])
-
-                    __test_split = pd.DataFrame()
-                    for house_number in self.__target_houses['TEST']:
-                        __test_split = pd.concat([__test_split, self.data[house_number]])  
-                else:
-                    __train_split = self.data['TRAIN_SPLIT'] 
-                    __val_split = self.data['VALIDATE_SPLIT']
-                    __test_split = self.data['TEST_SPLIT']
-
-                X_array = __train_split['aggregate'].values
-                y_array = __train_split[__train_split.columns[-1]].values
-
-                X_scaler.fit(X_array.reshape(-1, 1))
-                y_scaler.fit(y_array.reshape(-1, 1))
-
-                pickle.dump(X_scaler, open(os.path.join(scalars_directory, f'X_scaler.sav'), 'wb'))
-                pickle.dump(y_scaler, open(os.path.join(scalars_directory, f'y_scaler.sav'), 'wb'))
-
-                X_train = X_scaler.transform(X_array.reshape(-1, 1)).flatten()
-                y_train = y_scaler.transform(y_array.reshape(-1, 1)).flatten()
-
-                __train_df = pd.DataFrame({'time': __train_split.index, 'aggregate': X_train, f"{__train_split.columns[-1]}":y_train}).set_index('time')
-
-                X_array = __val_split['aggregate'].values
-                y_array = __val_split[__val_split.columns[-1]].values
-
-                X_val = X_scaler.transform(X_array.reshape(-1, 1)).flatten()
-                y_val = y_scaler.transform(y_array.reshape(-1, 1)).flatten()
-
-                X_array = __test_split['aggregate'].values
-                y_array = __test_split[__test_split.columns[-1]].values
-
-                X_test = X_scaler.transform(X_array.reshape(-1, 1)).flatten()
-                y_test = y_scaler.transform(y_array.reshape(-1, 1)).flatten()
-
-                __val_df = pd.DataFrame({'time': __val_split.index, 'aggregate': X_val, f"{__val_split.columns[-1]}":y_val}).set_index('time')
-                __test_df = pd.DataFrame({'time': __test_split.index, 'aggregate': X_test, f"{__test_split.columns[-1]}":y_test}).set_index('time')
-
-                self.data = {'TRAIN_SPLIT': __train_df, 'VALIDATE_SPLIT': __val_df, 'TEST_SPLIT': __test_df}
-            
-            else:
+            if not training:
                 for house_number in self.data.keys():
                     print(f"Normalizing for house number: ", house_number)
                     __appliance_data = self.data[house_number]
@@ -419,13 +420,50 @@ class RefitData():
                     X_scaler.fit(X_array.reshape(-1, 1))
                     y_scaler.fit(y_array.reshape(-1, 1))
 
+                    X = X_scaler.transform(X_array.reshape(-1, 1)).flatten()
+                    y = y_scaler.transform(y_array.reshape(-1, 1)).flatten()
+                    __normalized_df = pd.DataFrame({'time': __appliance_data.index, 'aggregate': X, f"{__appliance_data.columns[-1]}":y}).set_index('time')
+                    self.data.update({house_number: __normalized_df})
+                print("Updating data with normalized dataset...")
+
+            else:
+                print('Normalization is being performed for training a model. Scalers will be computed/fit considering the train_split and using those scalers, all splits will be normalized/transformed.')
+
+                if len(self.splits) == 0:
+                    raise Exception("Call the function get_proportioned_data to specify the training, validation and testing splits, in order to perform normalization for training.")
+                else:
+                    X_array = self.splits['TRAIN']['aggregate'].values
+                    y_array = self.splits['TRAIN'][self.splits['TRAIN'].columns[-1]].values
+
+                    X_scaler.fit(X_array.reshape(-1, 1))
+                    y_scaler.fit(y_array.reshape(-1, 1))
+
                     pickle.dump(X_scaler, open(os.path.join(scalars_directory, f'X_scaler.sav'), 'wb'))
                     pickle.dump(y_scaler, open(os.path.join(scalars_directory, f'y_scaler.sav'), 'wb'))
 
                     X_train = X_scaler.transform(X_array.reshape(-1, 1)).flatten()
                     y_train = y_scaler.transform(y_array.reshape(-1, 1)).flatten()
-                    __df = pd.DataFrame({'time': __train_split.index, 'aggregate': X_train, f"{__train_split.columns[-1]}":y_train}).set_index('time')
-                    self.data.update({house_number: __normalized_df})
+
+                    __train_df = pd.DataFrame({'time': self.splits['TRAIN'].index, 'aggregate': X_train,
+                                               f"{self.splits['TRAIN'].columns[-1]}": y_train}).set_index('time')
+
+                    X_array = self.splits['VALIDATE']['aggregate'].values
+                    y_array = self.splits['VALIDATE'][self.splits['VALIDATE'].columns[-1]].values
+
+                    X_val = X_scaler.transform(X_array.reshape(-1, 1)).flatten()
+                    y_val = y_scaler.transform(y_array.reshape(-1, 1)).flatten()
+
+                    X_array = self.splits['TEST']['aggregate'].values
+                    y_array = self.splits['TEST'][self.splits['TEST'].columns[-1]].values
+
+                    X_test = X_scaler.transform(X_array.reshape(-1, 1)).flatten()
+                    y_test = y_scaler.transform(y_array.reshape(-1, 1)).flatten()
+
+                    __val_df = pd.DataFrame({'time': self.splits['VALIDATE'].index, 'aggregate': X_val, f"{self.splits['VALIDATE'].columns[-1]}": y_val}).set_index('time')
+                    __test_df = pd.DataFrame({'time': self.splits['TEST'].index, 'aggregate': X_test,f"{self.splits['TEST'].columns[-1]}": y_test}).set_index('time')
+
+                    print("Updating splits with normalized data splits...")
+                    self.splits = {'TRAIN': __train_df, 'VALIDATE': __val_df, 'TEST': __test_df}
 
         except Exception as e:
             print("Error occured in normalize method of REFIT_Data due to ", e)
