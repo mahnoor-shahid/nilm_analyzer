@@ -36,7 +36,7 @@ conda activate refit_loader_env
 git submodule add https://github.com/mahnoor-shahid/refit_loader.git
 ```
 
-2) Make sure the 'config.json' file has the correct DATA_FOLDER path; [Download](#downloads) the dataset and it should be located in this data folder.
+2) Make sure the 'config.json' file has the correct DATA_FOLDER path; [Download](##downloads) the dataset and it should be located in this data folder.
 ```
 { 
     "DATA_FOLDER" : "data/refit/",
