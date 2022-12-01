@@ -21,6 +21,7 @@ Ensure that the following dependencies are satisfied either in your current envi
   - pandas=1.2.4
   - dask=2021.06.2
   - json=2.0.9
+  - sklearn=1.1.2
 ```
 or create a new environment using 'environment.yml'
 ```
