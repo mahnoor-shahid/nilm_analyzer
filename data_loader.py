@@ -407,6 +407,9 @@ class RefitData():
                 print('Argument \'scaler\' value is undefined! Setting it to standard scaling....')
                 X_scaler, y_scaler = StandardScaler(), StandardScaler()
 
+            if not os.path.exists(scalars_directory):
+                os.makedirs(f'{scalars_directory}/', )  # if not then create folder
+
             if not training:
                 for house_number in self.data.keys():
                     print(f"Normalizing for house number: ", house_number)
@@ -416,6 +419,8 @@ class RefitData():
 
                     X_scaler.fit(X_array.reshape(-1, 1))
                     y_scaler.fit(y_array.reshape(-1, 1))
+                    pickle.dump(X_scaler, open(os.path.join(scalars_directory, f'X_scaler_house_{house_number}.sav'), 'wb'))
+                    pickle.dump(y_scaler, open(os.path.join(scalars_directory, f'y_scaler_house_{house_number}.sav'), 'wb'))
                     X = X_scaler.transform(X_array.reshape(-1, 1)).flatten()
                     y = y_scaler.transform(y_array.reshape(-1, 1)).flatten()
                     __normalized_df = pd.DataFrame({'time': __appliance_data.index, 'aggregate': X, f"{__appliance_data.columns[-1]}":y}).set_index('time')
@@ -423,10 +428,6 @@ class RefitData():
                 print("Updating data with normalized dataset...")
 
             else:
-
-                if not os.path.exists(scalars_directory):
-                    os.makedirs(f'{scalars_directory}/', )  # if not then create folder
-                    
                 print('Normalization is being performed for training a model. Scalers will be computed/fit considering the train_split and using those scalers, all splits will be normalized/transformed.')
 
                 if len(self.splits) == 0:
