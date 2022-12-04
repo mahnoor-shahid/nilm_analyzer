@@ -30,7 +30,7 @@ conda activate refit_loader_env
 ```
 
 
-## Steps to implement this project
+# Steps to implement this project
 1) Use this repository as a submodule and clone it into your target source project
 ```
 git submodule add https://github.com/mahnoor-shahid/refit_loader.git
