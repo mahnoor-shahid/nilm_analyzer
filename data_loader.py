@@ -267,7 +267,7 @@ class RefitData():
                 appliance_data.fillna(method='ffill', axis=0, inplace=True, limit=self.__window_limit)
                 appliance_data.fillna(axis=0, inplace=True, value=self.__fill_value)
                 appliance_data = appliance_data.resample(self.__sampling_period).median()
-                appliance_data.dropna(inplace = True)
+                # appliance_data.dropna(inplace = True)
                 self.data.update({house_number: appliance_data})
             print("Updating data with resampled dataset...")
 
@@ -275,7 +275,7 @@ class RefitData():
             print("Error occured in resample method of REFIT_Data due to ", e)
             
             
-    def subset_data(self, no_of_days=5 ):
+    def subset_data(self, no_of_days=5, threshold = None ):
 
             """
             This method will create different and smaller versions of the training, validation and testing subsets from the collective_data
@@ -301,7 +301,7 @@ class RefitData():
             self.__no_of_days = no_of_days
             for house_number, value in self.data.items():
                 print(f"Subetting dataset with {self.__no_of_days} days of most activities for House {house_number}")
-                activities = get_activities(value)
+                activities = get_activities(value, threshold)
                 date_wise_activities = activities.groupby([activities['Activity_Start'].dt.date]).mean()
                 time_indices = date_wise_activities.sort_values('Duration').tail(self.__no_of_days).index
                 df_outer = pd.DataFrame()
