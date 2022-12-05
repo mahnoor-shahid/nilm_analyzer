@@ -301,9 +301,9 @@ class RefitData():
             self.__no_of_days = no_of_days
             for house_number, value in self.data.items():
                 print(f"Subetting dataset with {self.__no_of_days} days of most activities for House {house_number}")
-                activities = get_activities(value, threshold)
-                date_wise_activities = activities.groupby([activities['Activity_Start'].dt.date]).mean()
-                time_indices = date_wise_activities.sort_values('Duration').tail(self.__no_of_days).index
+                activities = get_activities(value, threshold=threshold)
+                date_wise_activities = activities.groupby([activities['Activity_Start'].dt.date]).sum()
+                time_indices = date_wise_activities.sort_values('Duration', ascending=False).head(self.__no_of_days).index
                 df_outer = pd.DataFrame()
                 for version, time_indx in enumerate(time_indices):
                     df_outer = pd.concat([df_outer, value.loc[str(time_indx)]])
