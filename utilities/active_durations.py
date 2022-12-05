@@ -50,14 +50,15 @@ def __generate_activity_report(df, target_appliance, threshold):
         df_tmp['mask'] = (mask)
         df_tmp['cum_sum'] = (~mask).cumsum()
         df_tmp = df_tmp[df_tmp['mask'] == True]
-        df_tmp = df_tmp.groupby(['cum_sum', df.index.name]).first()
+        df_tmp = df_tmp.groupby(['cum_sum', str(df.index.name)]).first()
 
         for x in df_tmp.index.unique(level='cum_sum'):
             d = df_tmp.loc[(x)].reset_index()
-            duration_start.append(d.iloc[0]['time'])
-            duration_end.append(d.iloc[-1]['time'])
+            duration_start.append(d.iloc[0][str(df.index.name)])
+            duration_end.append(d.iloc[-1][str(df.index.name)])
             duration_size.append(duration_end[-1] - duration_start[-1])
         durations = (pd.Series(duration_size)) / np.timedelta64(1, 'm')
+        print(durations)
         return pd.DataFrame({'Activity_Start': duration_start, 'Activity_End': duration_end, 'Duration': durations})
     
     except Exception as e:
