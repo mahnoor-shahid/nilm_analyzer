@@ -58,7 +58,6 @@ def __generate_activity_report(df, target_appliance, threshold):
             duration_end.append(d.iloc[-1][str(df.index.name)])
             duration_size.append(duration_end[-1] - duration_start[-1])
         durations = (pd.Series(duration_size)) / np.timedelta64(1, 'm')
-        print(durations)
         return pd.DataFrame({'Activity_Start': duration_start, 'Activity_End': duration_end, 'Duration': durations})
     
     except Exception as e:
