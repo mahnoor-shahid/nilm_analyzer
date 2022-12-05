@@ -5,7 +5,7 @@ import pandas as pd
 from refit_loader.utilities.time_utils import convert_object2timestamps
 
 
-def __generate_activity_report(df, target_appliance, threshold, index_name='time'):
+def __generate_activity_report(df, target_appliance, threshold):
     """
     This method will return the durations or events when the appliance was active (on) 
     
@@ -24,9 +24,7 @@ def __generate_activity_report(df, target_appliance, threshold, index_name='time
     target_appliance : string
             name of the target appliance (may be the name of the column targeted)
     threshold : float
-            value of threshold for raw samples of power consumption, above this threshold appliance is consider active 
-    index_name: string
-            name of the index (index_name was set to 'time' while loading)
+            value of threshold for raw samples of power consumption, above this threshold appliance is consider active
         
     returns: pandas.core.frame.DataFrame
             dataframe is of the following format            
@@ -52,7 +50,7 @@ def __generate_activity_report(df, target_appliance, threshold, index_name='time
         df_tmp['mask'] = (mask)
         df_tmp['cum_sum'] = (~mask).cumsum()
         df_tmp = df_tmp[df_tmp['mask'] == True]
-        df_tmp = df_tmp.groupby(['cum_sum', index_name]).first()
+        df_tmp = df_tmp.groupby(['cum_sum', df.index.name]).first()
 
         for x in df_tmp.index.unique(level='cum_sum'):
             d = df_tmp.loc[(x)].reset_index()
