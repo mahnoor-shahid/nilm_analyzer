@@ -81,7 +81,6 @@ The REFIT Smart Home dataset is a publicly available dataset of Smart Home data.
 Dataset - https://pureportal.strath.ac.uk/files/52873459/Processed_Data_CSV.7z <br />
 Main Page - https://pureportal.strath.ac.uk/en/datasets/refit-electrical-load-measurements-cleaned
 
-
 ## Citation
 ```
 Murray, D., Stankovic, L. & Stankovic, V. An electrical load measurements dataset of United Kingdom households from a two-year longitudinal study. Sci Data 4, 160122 (2017). https://doi.org/10.1038/sdata.2016.122
