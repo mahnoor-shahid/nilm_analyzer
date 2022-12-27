@@ -26,7 +26,7 @@ conda activate refit_loader_env
 ```
 
 
-## Steps to implement this project
+## Getting Started
 1) Install the refit-loader in your current target environment
 ```
 pip install refit-loader
@@ -37,12 +37,23 @@ pip install refit-loader
 from refit_loader.data_loader import REFIT_Loader
 refit = REFIT_Loader(data_path='')
 ```
-3) Fetch data using the created refit object.
+3) Fetch the list of available appliances for selected houses.
 ```
-kettle = refit.
+refit.get_appliance_names(house=2)
 ```
-
-4) Take the reference from Refit_Analyzer to see how Refit_Loader can be accessed and how it's utilities can be used.
+4) Load data for selected appliance (all houses)
+```
+kettle = refit.get_appliance_data(appliance='Kettle')
+```
+5) (OR) Load data for selected house (all appliances).
+```
+house2 = refit.get_house_data(house=2)
+```
+6) (OR) Load data for sselected appliance and elected houses.
+```
+kettle = refit.get_appliance_data(appliance="Kettle", houses=[1,2,3])
+```
+7) Take the reference from Refit_Analyzer to see how Refit_Loader can be accessed and how it's utilities can be used.
 
 Reference Repository: <br />
 [Refit Analyzer](https://github.com/mahnoor-shahid/refit_analyzer) = REFIT analyzer is more like a user guide that uses REFIT Loader as a submodule and demonstrates how it can be used and how it can be useful with its utilities.
