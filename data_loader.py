@@ -4,11 +4,10 @@ import os, pickle
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler
 import math
 import dask.dataframe as dd
-from refit_loader.utilities.configuration import get_config_from_json
-from refit_loader.utilities.parser import refit_parser
-from refit_loader.utilities.time_utils import convert_object2timestamps
-from refit_loader.utilities.validations import check_house_availability, check_list_validations, check_correct_datatype
-from refit_loader.utilities.active_durations import get_activities
+from refit_loader.modules.parser import refit_parser
+from refit_loader.modules.validations import check_house_availability, check_list_validations, check_correct_datatype
+from refit_loader.modules.active_durations import get_activities
+from refit_loader.utilities import convert_object2timestamps, get_module_directory
     
 class __Loader:
     """
@@ -80,7 +79,7 @@ class REFIT_Loader(CSV_Loader):
     """
     Class that loads all the data into the memory using DASK
     """
-    def __init__(self):
+    def __init__(self, data_path):
         try:
             super().__init__()
         
@@ -88,7 +87,9 @@ class REFIT_Loader(CSV_Loader):
             print("Error occured in initialization of REFIT_Loader class due to ", e)
                 
         finally:
-            self.__config = get_config_from_json(description="refit_loader configuration", config_file="refit_loader/config.json")
+            # self.__config = get_config_from_json(description="refit_loader configuration", config_file='../refit_loader/config.json')
+            self.__config = {'DATA_FOLDER': os.path.join(os.getcwd(), data_path), 'DATA_TYPE':'.csv', 'README_FILE': os.path.join(get_module_directory(), 'metadata', 'REFIT_README.txt'),
+                             'REFIT_HOUSES': [1,2,3,4,5,6,7,8,9,10,11,12,13,15,16,17,18,19,20,21]}
             self.__collective_dataset = CSV_Loader._load_files_via_dask(_data_folder=self.__config['DATA_FOLDER']+'House_',
                                                                 _files_format=self.__config['DATA_TYPE'],
                                                                 _buildings=self.__config['REFIT_HOUSES'])
