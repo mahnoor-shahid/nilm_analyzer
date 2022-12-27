@@ -1,4 +1,7 @@
 
+
+
+
 def refit_parser(readme_file):
     """
     This method will return the dictionary of the appliances, parsed from README file of refit data

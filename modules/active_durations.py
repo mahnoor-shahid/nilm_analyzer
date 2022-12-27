@@ -2,7 +2,7 @@
 
 import numpy as np
 import pandas as pd
-from refit_loader.utilities.time_utils import convert_object2timestamps
+from refit_loader.utilities import convert_object2timestamps
 
 
 def __generate_activity_report(df, target_appliance, threshold):
