@@ -2,9 +2,9 @@ name: refit_loader_env
 channels:
   - defaults
 dependencies:
-  - python=3.9.2
-  - numpy=1.20.3
-  - pandas=1.2.4
-  - dask=2021.06.2
-  - json=2.0.9
-  - sklearn=1.1.2
+  - python>=3.9.2
+  - numpy>=1.20.3
+  - pandas>=1.2.4
+  - dask>=2021.06.2
+  - scikit-learn>=1.1.2
+  - matplotlib>=3.6
