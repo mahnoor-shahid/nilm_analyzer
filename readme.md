@@ -25,7 +25,6 @@ conda create env --file=environment.yml
 conda activate refit_loader_env
 ```
 
-
 ## Getting Started
 1) Install the refit-loader in your current target environment
 ```
