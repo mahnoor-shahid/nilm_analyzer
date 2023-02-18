@@ -28,9 +28,9 @@ def convert_timestamps2minutes(tstamps: pd.Series):
         print("Exception raised in generating convert_timestamps2minutes() method = ", e)
 
 
-def convert_object2timestamps(objects: pd.Series):
+def convert_object2timestamps(df, unit_value='s'):
     try:
-        return pd.to_datetime(objects)
+        df.index = pd.to_datetime(df.index, unit=unit_value)
 
     except Exception as e:
         print("Exception raised in generating convert_objects2timestamps() method = ", e)
