@@ -1,6 +1,5 @@
-# nilm_datasets package
+# nilm_datasets python package
 > This project uses **Dask Dataframes** to ease and fasten the process of loading and analyzing all the data of any publicly available NILM dataset and provides basic transformations like resampling, standardization and extracting activations by thresholding for statistical analysis purpose. Can be used further for splitting datasets into train, validation and test subsets for Energy Disaggregation task. 
-
 
 ## Getting Started
 1) Install the refit-loader in your current target environment.
@@ -46,7 +45,7 @@ Ensure that the following dependencies are satisfied in your current environment
 ```
 
 
-### Datasets Included
+## Datasets Included
 REFIT [United Kingdom] <br />
 Murray, D., Stankovic, L. & Stankovic, V. An electrical load measurements dataset of United Kingdom households from a two-year longitudinal study. Sci Data 4, 160122 (2017). https://doi.org/10.1038/sdata.2016.122 <br />
 
@@ -66,35 +65,23 @@ iAWE [India] <br />
 N. Batra, A. Singh, P. Singh, H. Dutta, V. Sarangan, M. Srivastava "Data Driven Energy Efficiency in Buildings"
 
 
-
-## Repo Structure:
-This repository follows the below structure format:
-```
-|
-|── data_loader.py
-|
-├── metadata
-|  └── REFIT_README.txt
-|
-├── modules
-|  └── active_durations.py
-|  └── parser.py
-|  └── validations.py
-|  └── normalisation.py
-|
-├── environment.yml
-|
-├── readme.md
-|
-```
-
 ## Downloads
-The REFIT Smart Home dataset is a publicly available dataset of Smart Home data. <br />
-Dataset - https://pureportal.strath.ac.uk/files/52873459/Processed_Data_CSV.7z <br />
-Main Page - https://pureportal.strath.ac.uk/en/datasets/refit-electrical-load-measurements-cleaned
+REFIT [UK]
+https://pureportal.strath.ac.uk/files/52873459/Processed_Data_CSV.7z
 
-## Citation
-```
-Murray, D., Stankovic, L. & Stankovic, V. An electrical load measurements dataset of United Kingdom households from a two-year longitudinal study. Sci Data 4, 160122 (2017). https://doi.org/10.1038/sdata.2016.122
-```
+UK-DALE [UK]
+http://data.ukedc.rl.ac.uk/simplebrowse/edc/efficiency/residential/EnergyConsumption/Domestic/UK-DALE-2017/UK-DALE-FULL-disaggregated/ukdale.zip
+
+AMPds [Canada]
+https://dataverse.harvard.edu/api/access/datafile/2741425?format=original
+
+GeLaP [GERMANY]
+https://mygit.th-deg.de/tcg/gelap/-/tree/master
+
+DEDDIAG [GERMANY]
+https://figshare.com/articles/dataset/DEDDIAG_a_domestic_electricity_demand_dataset_of_individual_appliances_in_Germany/13615073
+
+iAWE [INIDA]
+https://drive.google.com/open?id=1c4Q9iusYbwXkCppXTsak5oZZYHfXPmnp
+
 
