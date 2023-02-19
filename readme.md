@@ -1,4 +1,16 @@
 
+[![Next][Next.js]][Next-url]
+[![React][React.js]][React-url]
+[![Vue][Vue.js]][Vue-url]
+[![Angular][Angular.io]][Angular-url]
+[![Svelte][Svelte.dev]][Svelte-url]
+[![Laravel][Laravel.com]][Laravel-url]
+[![Bootstrap][Bootstrap.com]][Bootstrap-url]
+[![JQuery][JQuery.com]][JQuery-url]
+
+
+
+
 # NILM_Analyzer: A Simple Python Package
 > This project uses **Dask Dataframes** to ease and fasten the process of loading and analyzing all the data of any publicly available NILM dataset and provides basic transformations like resampling, standardization and extracting activations by thresholding for statistical analysis purpose. Can be used further for splitting datasets into train, validation and test subsets for Energy Disaggregation task. 
 
