@@ -1,10 +1,11 @@
-# nilm_datasets python package
+
+# NILM_Analyzer: A Simple Python Package
 > This project uses **Dask Dataframes** to ease and fasten the process of loading and analyzing all the data of any publicly available NILM dataset and provides basic transformations like resampling, standardization and extracting activations by thresholding for statistical analysis purpose. Can be used further for splitting datasets into train, validation and test subsets for Energy Disaggregation task. 
 
 ## Getting Started
-1) Install the refit-loader in your current target environment.
+1) Install the nilm_analyzer in your current environment.
 ```
-pip install nilm_datasets
+pip install nilm_analyzer
 ```
 
 2) [Download](#downloads) any NILM dataset(s) and import the corresponding loader. Then, pass the data path of the data directory where the dataset is located. For instance,
@@ -31,8 +32,8 @@ kettle = refit.get_appliance_data(appliance="Kettle", houses=[1,2,3])
 7) Take the reference from NILM_Analyzer to see how Refit_Loader can be accessed and how it's utilities can be used.
 
 Reference Repository: <br />
-[NILM Analyzer](https://github.com/mahnoor-shahid/nilm_analyzer) = NILM analyzer is more like a user guide that explains how nilm_datasets package can be utilized and explains how they can be analyzed using nilm_datasets package and demonstrates all the basic functionalities that it provides.
-[Refit Analyzer](https://github.com/mahnoor-shahid/refit_analyzer) = REFIT analyzer is more like a user guide that uses nilm_datasets can be accessed and how to utilize its 
+[NILM Analyzer Tutorials](https://github.com/mahnoor-shahid/nilm_analyzer_tutorials) = This repository serves more like a user guide that describes how to use the nilm analyzer package, and demonstrates all the basic functionalities that it provides.
+
 
 ## Dependencies
 Ensure that the following dependencies are satisfied in your current environment 
