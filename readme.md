@@ -67,22 +67,22 @@ N. Batra, A. Singh, P. Singh, H. Dutta, V. Sarangan, M. Srivastava "Data Driven 
 
 
 ## Downloads
-REFIT [UK]
+REFIT [United Kingdom]
 https://pureportal.strath.ac.uk/files/52873459/Processed_Data_CSV.7z
 
-UK-DALE [UK]
+UK-DALE [United Kingdom]
 http://data.ukedc.rl.ac.uk/simplebrowse/edc/efficiency/residential/EnergyConsumption/Domestic/UK-DALE-2017/UK-DALE-FULL-disaggregated/ukdale.zip
 
 AMPds [Canada]
 https://dataverse.harvard.edu/api/access/datafile/2741425?format=original
 
-GeLaP [GERMANY]
+GeLaP [Germany]
 https://mygit.th-deg.de/tcg/gelap/-/tree/master
 
-DEDDIAG [GERMANY]
+DEDDIAG [Germany]
 https://figshare.com/articles/dataset/DEDDIAG_a_domestic_electricity_demand_dataset_of_individual_appliances_in_Germany/13615073
 
-iAWE [INIDA]
+iAWE [India]
 https://drive.google.com/open?id=1c4Q9iusYbwXkCppXTsak5oZZYHfXPmnp
 
 
