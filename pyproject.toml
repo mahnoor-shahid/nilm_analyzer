@@ -1,0 +1,27 @@
+
+[project]
+name = "nilm_analyzer"
+version = "1.0.6"
+authors = [
+  { name="Mahnoor Shahid", email="mahnoor.shahid.shakir@outlook.com" },
+]
+description = "A simple python package for easy loading and manipulation of NILM datasets."
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.9.2"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+  "numpy>=1.20.3",
+  "pandas>=1.2.4",
+  "dask>=2021.06.2",
+  "scikit-learn>=1.1.2",
+]
+
+[project.urls]
+repository = "https://github.com/mahnoor-shahid/nilm_analyzer"
+
+
