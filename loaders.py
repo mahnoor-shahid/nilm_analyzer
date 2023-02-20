@@ -7,10 +7,10 @@ import glob
 import dask.dataframe as dd
 import warnings
 warnings.filterwarnings('ignore')
-from NILM_datasets.modules.parser import refit_parser, ukdale_parser, ampds_parser, iawe_parser, deddiag_parser, gelap_parser
-from NILM_datasets.modules.validations import check_house_availability, check_list_validations, check_correct_datatype
-from NILM_datasets.modules.active_durations import get_activities
-from NILM_datasets.utilities import convert_object2timestamps, get_module_directory
+from nilm_analyzer.modules.parser import refit_parser, ukdale_parser, ampds_parser, iawe_parser, deddiag_parser, gelap_parser
+from nilm_analyzer.modules.validations import check_house_availability, check_list_validations, check_correct_datatype
+from nilm_analyzer.modules.active_durations import get_activities
+from nilm_analyzer.utilities import convert_object2timestamps, get_module_directory
     
 class __Loader:
     """
