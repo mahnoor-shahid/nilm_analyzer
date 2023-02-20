@@ -5,7 +5,7 @@
 ## Getting Started
 1) Install the nilm_analyzer in your current environment.
 ```
-pip install nilm_analyzer
+pip install nilm-analyzer
 ```
 
 2) [Download](#downloads) any NILM dataset(s) and import the corresponding loader. Then, pass the data path of the data directory where the dataset is located. For instance,
@@ -29,7 +29,11 @@ house2 = refit.get_house_data(house=2)
 ```
 kettle = refit.get_appliance_data(appliance="Kettle", houses=[1,2,3])
 ```
-7) Take the reference from NILM_Analyzer to see how Refit_Loader can be accessed and how it's utilities can be used.
+7) To access the data, use the below command.
+```
+kettle.data
+```
+8) Take the reference from NILM_Analyzer to see how Refit_Loader can be accessed and how it's utilities can be used.
 
 Reference Repository: <br />
 [NILM Analyzer Tutorials](https://github.com/mahnoor-shahid/nilm_analyzer_tutorials) = This repository serves more like a user guide that describes how to use the nilm analyzer package, and demonstrates all the basic functionalities that it provides.
