@@ -1,3 +1,26 @@
+<!-- ![GitHub](https://img.shields.io/github/license/mahnoor-shahid/nilm_analyzer?style=for-the-badge) -->
+<!-- ![GitHub Repo stars](https://img.shields.io/github/stars/mahnoor-shahid/nilm_analyzer?style=for-the-badge) -->
+<!-- ![GitHub forks](https://img.shields.io/github/forks/mahnoor-shahid/nilm_analyzer?style=for-the-badge) -->
+<!-- ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/mahnoor-shahid/nilm_analyzer?include_prereleases&style=for-the-badge) -->
+<!-- ![GitHub issues](https://img.shields.io/github/issues-raw/mahnoor-shahid/nilm_analyzer?style=for-the-badge) -->
+<!-- ![GitHub pull requests](https://img.shields.io/github/issues-pr/mahnoor-shahid/nilm_analyzer?style=for-the-badge) -->
+
+![GitHub](https://img.shields.io/github/license/mahnoor-shahid/nilm_analyzer)
+![GitHub Repo stars](https://img.shields.io/github/stars/mahnoor-shahid/nilm_analyzer)
+![GitHub forks](https://img.shields.io/github/forks/mahnoor-shahid/nilm_analyzer)
+![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/mahnoor-shahid/nilm_analyzer?include_prereleases)
+<a href="https://github.com/mahnoor-shahid/nilm_analyzer" alt="python">
+        <img src="https://img.shields.io/badge/python-v3.9-brightgreen" /></a>
+<a href="https://github.com/mahnoor-shahid/nilm_analyzer" alt="numpy">
+        <img src="https://img.shields.io/badge/numpy-1.20.3-yellowgreen" /></a>
+<a href="https://github.com/mahnoor-shahid/nilm_analyzer" alt="pandas">
+        <img src="https://img.shields.io/badge/pandas-1.2.4-yellowgreen" /></a>
+<a href="https://github.com/mahnoor-shahid/nilm_analyzer" alt="dask">
+        <img src="https://img.shields.io/badge/dask-2022.05.02-red" /></a>  <a href="https://github.com/mahnoor-shahid/nilm_analyzer" alt="scikit-learn">
+        <img src="https://img.shields.io/badge/scikit--learn-1.2.1-yellowgreen" /></a>
+
+<!-- ![GitHub issues](https://img.shields.io/github/issues-raw/mahnoor-shahid/nilm_analyzer) -->
+<!--![GitHub pull requests](https://img.shields.io/github/issues-pr/mahnoor-shahid/nilm_analyzer) -->
 
 # nilm-analyzer: a simple python package for loading and processing nilm datasets
 > This project uses **Dask Dataframes** to ease and fasten the process of loading and analyzing all the data of any publicly available NILM dataset and provides basic transformations like resampling, standardization and extracting activations by thresholding for statistical analysis purpose. Can be used further for splitting datasets into train, validation and test subsets for Energy Disaggregation task. 
