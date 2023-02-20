@@ -3,7 +3,7 @@
 import numpy as np
 import pandas as pd
 from datetime import timedelta
-from NILM_datasets.utilities import convert_object2timestamps
+from nilm_analyzer.utilities import convert_object2timestamps
 
 
 def __generate_activity_report(df, target_appliance, threshold_x, threshold_y):
