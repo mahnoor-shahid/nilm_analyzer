@@ -70,7 +70,7 @@ def __generate_activity_report(df, target_appliance, threshold_x, threshold_y):
 
         delta = next_act_st[next_act_st.columns[-1]] - prev_act_end[prev_act_end.columns[-1]]
 
-        mask = delta < timedelta(minutes=30)
+        mask = delta < timedelta(minutes=threshold_x)
         mask = mask.shift(periods=1, fill_value=True)
         activities['low_delta'] = (mask)
         activities['cum_sum'] = (~mask).cumsum()
@@ -79,7 +79,9 @@ def __generate_activity_report(df, target_appliance, threshold_x, threshold_y):
         end = activities.groupby(['cum_sum'])['end'].last()
         duration_in_seconds = activities.groupby(['cum_sum'])['duration_in_seconds'].sum()
         duration_df = pd.DataFrame({'activity_start': start, 'activity_end': end, 'duration_in_seconds': duration_in_seconds})
-        return duration_df[duration_df['duration_in_seconds']>30.0]
+        duration_df.reset_index(inplace=True)
+        duration_df.drop(columns=['cum_sum'], inplace=True)
+        return duration_df[duration_df['duration_in_seconds']>180.0]
     
     except Exception as e:
         print("Exception raised in generate_activity_report() method = ", e)
@@ -145,13 +147,13 @@ def get_activities(data, target_appliance=None, threshold_x=None, threshold_y=No
                         raise Exception(f"Please specify target appliance {df.columns}")
                 if threshold_y is None:
                     threshold_y = 0.02 * df[target_appliance].max()
-                    print(f'Consumption Threshold is set to = {threshold_y}')
+                print(f'Consumption Threshold is set to = {threshold_y}')
                 if threshold_x is None:
                     if target_appliance == 'kettle':
                         threshold_x = 5.0
                     else:
                         threshold_x = 30.0
-                    print(f'Time Delay Threshold is set to = {threshold_x} minutes')
+                print(f'Time Delay Threshold is set to = {threshold_x} minutes')
                 print(f"Estimating active durations of House {key}: {target_appliance}")
                 house_activities.update({key: __generate_activity_report(df, target_appliance, threshold_x, threshold_y)})
 
@@ -169,13 +171,13 @@ def get_activities(data, target_appliance=None, threshold_x=None, threshold_y=No
                     raise Exception(f"Please specify target_appliance \n {data.columns}")
             if threshold_y is None:
                 threshold_y = 0.02 * data[target_appliance].max()
-                print(f'Consumption Threshold is set to = {threshold_y}')
+            print(f'Consumption Threshold is set to = {threshold_y}')
             if threshold_x is None:
                 if target_appliance == 'kettle':
                     threshold_x = 5.0
                 else:
                     threshold_x = 30.0
-                print(f'Time Delay Threshold is set to = {threshold_x} minutes')
+            print(f'Time Delay Threshold is set to = {threshold_x} minutes')
             print(f"Estimating active durations of: {target_appliance}")
             return __generate_activity_report(data, target_appliance, threshold_x, threshold_y)
 
