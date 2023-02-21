@@ -147,6 +147,8 @@ def get_activities(data, target_appliance=None, threshold_x=None, threshold_y=No
                         raise Exception(f"Please specify target appliance {df.columns}")
                 if threshold_y is None:
                     threshold_y = 0.02 * df[target_appliance].max()
+                else:
+                    threshold_y = threshold_y * df[target_appliance].max()
                 print(f'Consumption Threshold is set to = {threshold_y}')
                 if threshold_x is None:
                     if target_appliance == 'kettle':
@@ -171,6 +173,8 @@ def get_activities(data, target_appliance=None, threshold_x=None, threshold_y=No
                     raise Exception(f"Please specify target_appliance \n {data.columns}")
             if threshold_y is None:
                 threshold_y = 0.02 * data[target_appliance].max()
+            else:
+                threshold_y = threshold_y * data[target_appliance].max()
             print(f'Consumption Threshold is set to = {threshold_y}')
             if threshold_x is None:
                 if target_appliance == 'kettle':
