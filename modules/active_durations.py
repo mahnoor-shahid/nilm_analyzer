@@ -81,8 +81,10 @@ def __generate_activity_report(df, target_appliance, threshold_x, threshold_y, m
         duration_df = pd.DataFrame({'activity_start': start, 'activity_end': end, 'duration_in_minutes': duration_in_minutes})
         duration_df.reset_index(inplace=True)
         duration_df.drop(columns=['cum_sum'], inplace=True)
-        min_limit = 3.0
-        max_limit = 240.0
+        if min_limit is None:
+            min_limit = 3.0
+        if max_limit is None:
+            max_limit = 240.0
         df = duration_df[(duration_df['duration_in_minutes'] > min_limit)]
         return df[(df['duration_in_minutes'] < max_limit)]
     
