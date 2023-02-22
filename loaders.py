@@ -1092,12 +1092,12 @@ class _EnergyDataset():
             print("Error occured in resample method of _EnergyDataset due to ", e)
             
 
-    def get_activations(self, target_appliance=None, threshold_x=None, threshold_y=None):
+    def get_activations(self, target_appliance=None, threshold_x=None, threshold_y=None, min_limit=None, max_limit=None):
 
         try:
             for house_number, value in self.data.items():
                 print(f"Extracting activations for House {house_number}")
-                self.activations.update({house_number: get_activities(value, target_appliance, threshold_x, threshold_y) })
+                self.activations.update({house_number: get_activities(value, target_appliance, threshold_x, threshold_y, min_limit, max_limit) })
             print("Updating activations with durations when appliance is active (above threshold).")
 
         except Exception as e:

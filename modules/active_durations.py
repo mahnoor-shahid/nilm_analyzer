@@ -6,7 +6,7 @@ from datetime import timedelta
 from nilm_analyzer.utilities import convert_object2timestamps
 
 
-def __generate_activity_report(df, target_appliance, threshold_x, threshold_y):
+def __generate_activity_report(df, target_appliance, threshold_x, threshold_y, min_limit, max_limit):
     """
     This method will return the durations or events when the appliance was active (on) 
     
@@ -58,8 +58,8 @@ def __generate_activity_report(df, target_appliance, threshold_x, threshold_y):
             duration_start.append(d.iloc[0][str(df.index.name)])
             duration_end.append(d.iloc[-1][str(df.index.name)])
             duration_size.append(duration_end[-1] - duration_start[-1])
-        durations = (pd.Series(duration_size)) / np.timedelta64(1, 's')
-        activities =  pd.DataFrame({'start': duration_start, 'end': duration_end, 'duration_in_seconds': durations})
+        durations = (pd.Series(duration_size)) / np.timedelta64(1, 'm')
+        activities =  pd.DataFrame({'start': duration_start, 'end': duration_end, 'duration_in_minutes': durations})
 
         prev_act_end = activities['end'][:-1]
         next_act_st = activities['start'][1:]
@@ -77,18 +77,21 @@ def __generate_activity_report(df, target_appliance, threshold_x, threshold_y):
 
         start = activities.groupby(['cum_sum'])['start'].first()
         end = activities.groupby(['cum_sum'])['end'].last()
-        duration_in_seconds = activities.groupby(['cum_sum'])['duration_in_seconds'].sum()
-        duration_df = pd.DataFrame({'activity_start': start, 'activity_end': end, 'duration_in_seconds': duration_in_seconds})
+        duration_in_minutes = activities.groupby(['cum_sum'])['duration_in_minutes'].sum()
+        duration_df = pd.DataFrame({'activity_start': start, 'activity_end': end, 'duration_in_minutes': duration_in_minutes})
         duration_df.reset_index(inplace=True)
         duration_df.drop(columns=['cum_sum'], inplace=True)
-        return duration_df[duration_df['duration_in_seconds']>180.0]
+        min_limit = 3.0
+        max_limit = 240.0
+        df = duration_df[(duration_df['duration_in_minutes'] > min_limit)]
+        return df[(df['duration_in_minutes'] < max_limit)]
     
     except Exception as e:
         print("Exception raised in generate_activity_report() method = ", e)
 
 
         
-def get_activities(data, target_appliance=None, threshold_x=None, threshold_y=None):
+def get_activities(data, target_appliance=None, threshold_x=None, threshold_y=None, min_limit=None, max_limit=None):
     """
     This method will call the generate_activity_report for every dataframe to compute the durations of the active appliance and append to either a dictionary or returns back the single dataframe
     
@@ -146,9 +149,9 @@ def get_activities(data, target_appliance=None, threshold_x=None, threshold_y=No
                     else:
                         raise Exception(f"Please specify target appliance {df.columns}")
                 if threshold_y is None:
-                    threshold_y = 0.02 * df[target_appliance].max()
-                else:
-                    threshold_y = threshold_y * df[target_appliance].max()
+                    threshold_y = 0.04 * df[target_appliance].max()
+                # else:
+                #     threshold_y = threshold_y * df[target_appliance].max()
                 print(f'Consumption Threshold is set to = {threshold_y}')
                 if threshold_x is None:
                     if target_appliance == 'kettle':
@@ -157,7 +160,7 @@ def get_activities(data, target_appliance=None, threshold_x=None, threshold_y=No
                         threshold_x = 30.0
                 print(f'Time Delay Threshold is set to = {threshold_x} minutes')
                 print(f"Estimating active durations of House {key}: {target_appliance}")
-                house_activities.update({key: __generate_activity_report(df, target_appliance, threshold_x, threshold_y)})
+                house_activities.update({key: __generate_activity_report(df, target_appliance, threshold_x, threshold_y, min_limit, max_limit)})
 
             return house_activities
         
@@ -173,8 +176,8 @@ def get_activities(data, target_appliance=None, threshold_x=None, threshold_y=No
                     raise Exception(f"Please specify target_appliance \n {data.columns}")
             if threshold_y is None:
                 threshold_y = 0.02 * data[target_appliance].max()
-            else:
-                threshold_y = threshold_y * data[target_appliance].max()
+            # else:
+            #     threshold_y = threshold_y * data[target_appliance].max()
             print(f'Consumption Threshold is set to = {threshold_y}')
             if threshold_x is None:
                 if target_appliance == 'kettle':
@@ -183,7 +186,7 @@ def get_activities(data, target_appliance=None, threshold_x=None, threshold_y=No
                     threshold_x = 30.0
             print(f'Time Delay Threshold is set to = {threshold_x} minutes')
             print(f"Estimating active durations of: {target_appliance}")
-            return __generate_activity_report(data, target_appliance, threshold_x, threshold_y)
+            return __generate_activity_report(data, target_appliance, threshold_x, threshold_y, min_limit, max_limit)
 
         else:
             print(f"Provided data should be of type <dict> or <pandas.core.frame.DataFrame> and not {type(data)}.")
