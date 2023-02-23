@@ -1130,7 +1130,7 @@ class _EnergyDataset():
         try:
             self.__no_of_days = no_of_days
             for house_number, value in self.data.items():
-                print(f"Subetting dataset with {self.__no_of_days} for House {house_number}")
+                print(f"Subetting dataset with {self.__no_of_days} days of data for House {house_number}")
                 # activities = get_activities(value)
                 # date_wise_activities = activities.groupby([activities['activity_start'].dt.date]).sum()
                 # time_indices = date_wise_activities.sort_values('duration_in_seconds', ascending=False).head(self.__no_of_days).index
