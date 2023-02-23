@@ -4,6 +4,7 @@ import os, pickle
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler
 import math
 import glob
+from datetime import timedelta
 import dask.dataframe as dd
 import warnings
 warnings.filterwarnings('ignore')
@@ -11,7 +12,7 @@ from nilm_analyzer.modules.parser import refit_parser, ukdale_parser, ampds_pars
 from nilm_analyzer.modules.validations import check_house_availability, check_list_validations, check_correct_datatype
 from nilm_analyzer.modules.active_durations import get_activities
 from nilm_analyzer.utilities import convert_object2timestamps, get_module_directory
-    
+
 class __Loader:
     """
     Interface that loads all the data into the memory
@@ -1104,7 +1105,7 @@ class _EnergyDataset():
             print("Error occured in get_activations method of _EnergyDataset due to ", e)
 
 
-    def subset_data(self, no_of_days=5, threshold = None ):
+    def subset_data(self, no_of_days=5):
         """
         This method will create different and smaller versions of the training, validation and testing subsets from the collective_data
 
@@ -1129,15 +1130,15 @@ class _EnergyDataset():
         try:
             self.__no_of_days = no_of_days
             for house_number, value in self.data.items():
-                print(f"Subetting dataset with {self.__no_of_days} days of most activities for House {house_number}")
-                activities = get_activities(value)
-                date_wise_activities = activities.groupby([activities['activity_start'].dt.date]).sum()
-                time_indices = date_wise_activities.sort_values('duration_in_seconds', ascending=False).head(self.__no_of_days).index
-                df_outer = pd.DataFrame()
-                for version, time_indx in enumerate(time_indices):
-                    df_outer = pd.concat([df_outer, value.loc[str(time_indx)]])
-                df_outer.sort_index(inplace=True)
-                self.data.update({house_number: df_outer})
+                print(f"Subetting dataset with {self.__no_of_days} for House {house_number}")
+                # activities = get_activities(value)
+                # date_wise_activities = activities.groupby([activities['activity_start'].dt.date]).sum()
+                # time_indices = date_wise_activities.sort_values('duration_in_seconds', ascending=False).head(self.__no_of_days).index
+                # df_outer = pd.DataFrame()
+                # for version, time_indx in enumerate(time_indices):
+                #     df_outer = pd.concat([df_outer, value.loc[str(time_indx)]])
+                # df_outer.sort_index(inplace=True)
+                self.data.update({house_number: value.loc[str(value.index[0]):str(value.index[0]+ timedelta(days=no_of_days))]})
             print("Updating data with selected active appliance activities...")
 
         except Exception as e:
