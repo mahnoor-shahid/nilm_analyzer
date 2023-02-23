@@ -57,9 +57,11 @@ def __generate_activity_report(df, target_appliance, threshold_x, threshold_y, m
             d = df_tmp.loc[(x)].reset_index()
             duration_start.append(d.iloc[0][str(df.index.name)])
             duration_end.append(d.iloc[-1][str(df.index.name)])
-            duration_size.append(duration_end[-1] - duration_start[-1])
-        durations = (pd.Series(duration_size)) / np.timedelta64(1, 'm')
-        activities =  pd.DataFrame({'start': duration_start, 'end': duration_end, 'duration_in_minutes': durations})
+            # duration_size.append(duration_end[-1] - duration_start[-1])
+        # durations = (pd.Series(duration_size)) / np.timedelta64(1, 's')
+        # durations = pd.Series(duration_size)
+        activities =  pd.DataFrame({'start': duration_start, 'end': duration_end})
+                                    # ,'duration_in_minutes': durations})
 
         prev_act_end = activities['end'][:-1]
         next_act_st = activities['start'][1:]
@@ -77,7 +79,8 @@ def __generate_activity_report(df, target_appliance, threshold_x, threshold_y, m
 
         start = activities.groupby(['cum_sum'])['start'].first()
         end = activities.groupby(['cum_sum'])['end'].last()
-        duration_in_minutes = activities.groupby(['cum_sum'])['duration_in_minutes'].sum()
+        duration_in_minutes = (end - start)/ np.timedelta64(1, 'm')
+        # duration_in_minutes = activities.groupby(['cum_sum'])['duration_in_minutes'].sum()
         duration_df = pd.DataFrame({'activity_start': start, 'activity_end': end, 'duration_in_minutes': duration_in_minutes})
         duration_df.reset_index(inplace=True)
         duration_df.drop(columns=['cum_sum'], inplace=True)
@@ -86,7 +89,10 @@ def __generate_activity_report(df, target_appliance, threshold_x, threshold_y, m
         if max_limit is None:
             max_limit = 240.0
         df = duration_df[(duration_df['duration_in_minutes'] > min_limit)]
-        return df[(df['duration_in_minutes'] < max_limit)]
+        df = df[(df['duration_in_minutes'] < max_limit)]
+        df.reset_index(inplace=True)
+        df.drop(columns=['index'], inplace=True)
+        return df
     
     except Exception as e:
         print("Exception raised in generate_activity_report() method = ", e)
