@@ -1105,7 +1105,7 @@ class _EnergyDataset():
             print("Error occured in get_activations method of _EnergyDataset due to ", e)
 
 
-    def subset_data(self, no_of_days=5):
+    def subset_data(self, no_of_days=5, best_days=False, target_appliance=None, threshold_x=None, threshold_y=None, min_limit=None, max_limit=None):
         """
         This method will create different and smaller versions of the training, validation and testing subsets from the collective_data
 
@@ -1131,14 +1131,18 @@ class _EnergyDataset():
             self.__no_of_days = no_of_days
             for house_number, value in self.data.items():
                 print(f"Subetting dataset with {self.__no_of_days} days of data for House {house_number}")
-                # activities = get_activities(value)
-                # date_wise_activities = activities.groupby([activities['activity_start'].dt.date]).sum()
-                # time_indices = date_wise_activities.sort_values('duration_in_seconds', ascending=False).head(self.__no_of_days).index
-                # df_outer = pd.DataFrame()
-                # for version, time_indx in enumerate(time_indices):
-                #     df_outer = pd.concat([df_outer, value.loc[str(time_indx)]])
-                # df_outer.sort_index(inplace=True)
-                self.data.update({house_number: value.loc[str(value.index[0]):str(value.index[0]+ timedelta(days=no_of_days))]})
+                if best_days:
+                    activities = get_activities(value, target_appliance, threshold_x, threshold_y, min_limit, max_limit)
+                    date_wise_activities = activities.groupby([activities['activity_start'].dt.date]).sum()
+                    time_indices = date_wise_activities.sort_values('duration_in_minutes', ascending=False).head(self.__no_of_days).index
+                    df_outer = pd.DataFrame()
+                    for version, time_indx in enumerate(time_indices):
+                        df_outer = pd.concat([df_outer, value.loc[str(time_indx)]])
+                    df_outer.sort_index(inplace=True)
+                    self.data.update(
+                        {house_number: df_outer})
+                else:
+                    self.data.update({house_number: value.loc[str(value.index[0]):str(value.index[0]+ timedelta(days=no_of_days))]})
             print("Updating data with selected active appliance activities...")
 
         except Exception as e:
