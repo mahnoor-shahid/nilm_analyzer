@@ -1038,7 +1038,7 @@ class _EnergyDataset():
         finally:
             pass
     
-    def resample(self, sampling_period=None, window_limit=2.0, fill_value=0.0):
+    def resample(self, sampling_period=None, window_limit=3.0, fill_value=0.0):
         """
         This method will return _EnergyDataset object that can let user access data in dictionary format as well can access some transformation methods
 
@@ -1067,17 +1067,20 @@ class _EnergyDataset():
                         }
         """
         try:
-            self.__sampling_period = sampling_period
+
             self.__fill_value = fill_value
-            self.__window_limit= int(window_limit*60)
 
             for house_number in self.data.keys():
                 print(f"Resampling for house number: ", house_number)
 #                     target_appliance = self.data[house_number].columns[-1]
                 appliance_data = self.data[house_number]
-                if self.__sampling_period is None:
+                if sampling_period is None:
                     delta = appliance_data.index[1] - appliance_data.index[0]
                     self.__sampling_period = str(delta.seconds) + 's'
+                    self.__window_limit = int((window_limit * 60) / delta.seconds)
+                else:
+                    self.__sampling_period = str(sampling_period) + 's'
+                    self.__window_limit = int((window_limit * 60) / sampling_period)
                 print(f'sampling_period = {self.__sampling_period}, window_limit = {self.__window_limit} samples, fill_value = {self.__fill_value}\n')
                 appliance_data = appliance_data[~appliance_data.index.duplicated(keep='first')]
 #                     appliance_data = appliance_data.resample('1s').mean().dropna()
