@@ -100,7 +100,7 @@ appliances:
   on_power_threshold: 10
   original_name: dishwasher
   room: kitchen
-  type: dish washer
+  type: dishwasher
   year_of_purchase: 2007
 - components:
   - {diagonal_size: 34, display_format: PAL, type: CRT screen}

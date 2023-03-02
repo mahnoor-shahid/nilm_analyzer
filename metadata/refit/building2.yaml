@@ -28,7 +28,7 @@ appliances:
   meters: [3]
 
 - original_name: Dishwaser
-  type: dish washer
+  type: dishwasher
   instance: 1
   meters: [4]
 

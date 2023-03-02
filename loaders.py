@@ -1,4 +1,3 @@
-import numpy as np
 import pandas as pd
 import os, pickle
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler
@@ -168,7 +167,8 @@ class REFIT_Loader(CSV_Loader):
                 
         finally:
             # self.__config = get_config_from_json(description="refit_loader configuration", config_file='../refit_loader/config.json')
-            self.__config = {'DATA_FOLDER': os.path.join(os.getcwd(), data_path), 'DATA_TYPE':'.csv', 'METADATA': os.path.join(get_module_directory(), 'metadata', 'refit'),
+            self.__config = {'DATA_FOLDER': os.path.join(os.getcwd(), data_path), 'DATA_TYPE':'.csv', 'METADATA': os.path.join(get_module_directory(),
+                                                                                                                               'metadata', 'refit'),
                              'REFIT_HOUSES': [1,2,3,4,5,6,7,8,9,10,11,12,13,15,16,17,18,19,20,21]}
             self.__keys_of_appliances = refit_parser(_buildings=self.__config['REFIT_HOUSES'], _metadata=self.__config['METADATA'])
             self.__collective_dataset = CSV_Loader._load_files_via_dask(_data_folder=self.__config['DATA_FOLDER'],
@@ -308,7 +308,8 @@ class UKDALE_Loader(CSV_Loader):
             print("Error occured in initialization of UKDALE_Loader class due to ", e)
 
         finally:
-            self.__config = {'DATA_FOLDER': os.path.join(os.getcwd(), data_path), 'DATA_TYPE':'.dat', 'METADATA': os.path.join(get_module_directory(), 'metadata', 'ukdale'),
+            self.__config = {'DATA_FOLDER': os.path.join(os.getcwd(), data_path), 'DATA_TYPE':'.dat', 'METADATA': os.path.join(get_module_directory(),
+                                                                                                                               'metadata', 'ukdale'),
                              'UKDALE_HOUSES': [1,2,3,4,5]}
             self.__keys_of_appliances = ukdale_parser(_buildings=self.__config['UKDALE_HOUSES'], _metadata=self.__config['METADATA'])
             self.__collective_dataset = CSV_Loader._load_files_via_dask_channel_wise(_data_folder=self.__config['DATA_FOLDER'],
@@ -592,7 +593,8 @@ class IAWE_Loader(CSV_Loader):
             print("Error occured in initialization of IAWE_Loader class due to ", e)
 
         finally:
-            self.__config = {'DATA_FOLDER': os.path.join(os.getcwd(), data_path), 'DATA_TYPE':'.csv', 'METADATA': os.path.join(get_module_directory(), 'metadata', 'iawe'),
+            self.__config = {'DATA_FOLDER': os.path.join(os.getcwd(), data_path), 'DATA_TYPE':'.csv', 'METADATA': os.path.join(get_module_directory(),
+                                                                                                                               'metadata', 'iawe'),
                              'IAWE_HOUSES': [1]}
             self.__keys_of_appliances = iawe_parser(_buildings=self.__config['IAWE_HOUSES'], _metadata=self.__config['METADATA'])
             self.__collective_dataset = CSV_Loader._load_files_via_dask_channel_wise(_data_folder=self.__config['DATA_FOLDER'],
@@ -747,7 +749,8 @@ class DEDDIAG_LOADER(CSV_Loader):
             print("Error occured in initialization of DEDDIAG_LOADER class due to ", e)
 
         finally:
-            self.__config = {'DATA_FOLDER': os.path.join(os.getcwd(), data_path), 'DATA_TYPE':'.tsv', 'METADATA': os.path.join(get_module_directory(), 'metadata', 'deddiag'),
+            self.__config = {'DATA_FOLDER': os.path.join(os.getcwd(), data_path), 'DATA_TYPE':'.tsv', 'METADATA': os.path.join(get_module_directory(),
+                                                                                                                               'metadata', 'deddiag'),
                              'DEDDIAG_HOUSES': ['00','01', '02', '03', '04', '05', '06', '07','08', '09', '10', '11', '12', '13', '14']}
             self.__keys_of_appliances = deddiag_parser(_buildings=self.__config['DEDDIAG_HOUSES'], _metadata=self.__config['METADATA'])
             self.__collective_dataset = CSV_Loader._load_files_via_dask_channel_wise(_data_folder=self.__config['DATA_FOLDER'],
@@ -892,7 +895,8 @@ class GELAP_Loader(CSV_Loader):
             print("Error occured in initialization of GELAP_Loader class due to ", e)
 
         finally:
-            self.__config = {'DATA_FOLDER': os.path.join(os.getcwd(), data_path), 'DATA_TYPE':'.csv', 'METADATA': os.path.join(get_module_directory(), 'metadata', 'gelap'),
+            self.__config = {'DATA_FOLDER': os.path.join(os.getcwd(), data_path), 'DATA_TYPE':'.csv', 'METADATA': os.path.join(get_module_directory(),
+                                                                                                                               'metadata', 'gelap'),
                              'GELAP_HOUSES': ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11',
                                                 '12', '13', '14', '15', '16', '17', '18', '19', '20']}
             self.__keys_of_appliances = gelap_parser(_buildings=self.__config['GELAP_HOUSES'], _metadata=self.__config['METADATA'])
@@ -1076,10 +1080,10 @@ class _EnergyDataset():
                 appliance_data = self.data[house_number]
                 if sampling_period is None:
                     delta = appliance_data.index[1] - appliance_data.index[0]
-                    self.__sampling_period = str(delta.seconds) + 's'
+                    self.__sampling_period = str(int(delta.seconds)) + 's'
                     self.__window_limit = int((window_limit * 60) / delta.seconds)
                 else:
-                    self.__sampling_period = str(sampling_period) + 's'
+                    self.__sampling_period = str(int(sampling_period)) + 's'
                     self.__window_limit = int((window_limit * 60) / sampling_period)
                 print(f'sampling_period = {self.__sampling_period}, window_limit = {self.__window_limit} samples, fill_value = {self.__fill_value}\n')
                 appliance_data = appliance_data[~appliance_data.index.duplicated(keep='first')]
