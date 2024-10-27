@@ -27,6 +27,7 @@
 
 ## Good to Read
 I'm pleased to share my latest research in the field of NILM. While this paper is not directly on the topic of this repository, it explores domain adaptation of NILM methods that might interest the same audience.
+<br />
 Muaz, M., Zinnikus, I., & Shahid, M. (2024, July). NILM Domain Adaptation: When Does It Work?. In 2024 10th International Conference on Smart Computing and Communication (ICSCC) (pp. 524-528). IEEE.
 
 ## Getting Started
