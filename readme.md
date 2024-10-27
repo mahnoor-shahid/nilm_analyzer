@@ -23,7 +23,11 @@
 <!--![GitHub pull requests](https://img.shields.io/github/issues-pr/mahnoor-shahid/nilm_analyzer) -->
 
 # nilm-analyzer: a simple python package for loading and processing nilm datasets
-> This project uses **Dask Dataframes** to ease and fasten the process of loading and analyzing all the data of any publicly available NILM dataset and provides basic transformations like resampling, standardization and extracting activations by thresholding for statistical analysis purpose. Can be used further for splitting datasets into train, validation and test subsets for Energy Disaggregation task. 
+> This project uses **Dask Dataframes** to ease and fasten the process of loading and analyzing all the data of any publicly available NILM dataset and provides basic transformations like resampling, standardization and extracting activations by thresholding for statistical analysis purpose. Can be used further for splitting datasets into train, validation and test subsets for Energy Disaggregation task.
+
+## Good to Read
+I'm pleased to share my latest research in the field of NILM. While this paper is not directly on the topic of this repository, it explores domain adaptation of NILM methods that might interest the same audience.
+Muaz, M., Zinnikus, I., & Shahid, M. (2024, July). NILM Domain Adaptation: When Does It Work?. In 2024 10th International Conference on Smart Computing and Communication (ICSCC) (pp. 524-528). IEEE.
 
 ## Getting Started
 1) Install the nilm_analyzer in your current environment.
